@@ -1,9 +1,10 @@
 name: Generate Codacy Repo Report
 
 on:
-  workflow_dispatch:  # Manual trigger
-  schedule:          # Optional: run daily at midnight
-    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Needed for pushing to repo
 
 jobs:
   generate-codacy-report:
@@ -28,8 +29,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python generate_codacy_report.py
 
-      - name: Upload Excel artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: codacy-repos-excel
-          path: repos_with_codacy.xlsx
+      - name: Commit and push Excel report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p reports
+          mv repos_with_codacy.xlsx reports/
+          git add reports/repos_with_codacy.xlsx
+          git commit -m "Add Codacy repos report"
+          git push
