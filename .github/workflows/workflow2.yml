@@ -1,0 +1,35 @@
+name: Generate Codacy Repo Report
+
+on:
+  workflow_dispatch:  # Manual trigger
+  schedule:          # Optional: run daily at midnight
+    - cron: '0 0 * * *'
+
+jobs:
+  generate-codacy-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyGithub pandas openpyxl
+
+      - name: Run Codacy repo detection script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python generate_codacy_report.py
+
+      - name: Upload Excel artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: codacy-repos-excel
+          path: repos_with_codacy.xlsx
