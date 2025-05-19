@@ -7,8 +7,11 @@ from openpyxl import Workbook
 import shutil
  
 # 🔍 Filter Conditions
-REQUIRED_EXPORT = True
-REQUIRED_STATUS = "changes required"
+# 🔍 Required Metadata Filters
+REQUIRED_PRIVATE = {True,False}
+ALLOWED_SENSITIVITY = {"medium", "high","low"}
+REQUIRED_CONTAINS_PI = {True,False}
+
 
 # Step 1: Environment Variables
 
@@ -38,11 +41,16 @@ def should_include_repo(repo):
         with open(custom_path, "r") as f:
             metadata = json.load(f)
         # Apply filters
-        if metadata.get("export") != REQUIRED_EXPORT:
+        if metadata.get("private") != REQUIRED_PRIVATE:
+            print(f"🚫 {repo['name']}: private != {REQUIRED_PRIVATE}")
             return False
-        if metadata.get("status", "").lower() != REQUIRED_STATUS.lower():
+        if metadata.get("sensitivity", "").lower() not in ALLOWED_SENSITIVITY:
+            print(f"🚫 {repo['name']}: sensitivity not in {ALLOWED_SENSITIVITY}")
             return False
-        return True 
+        if metadata.get("contains_pi") != REQUIRED_CONTAINS_PI:
+            print(f"🚫 {repo['name']}: contains_pi != {REQUIRED_CONTAINS_PI}")
+            return False
+ 
     except Exception as e:
         print(f"⚠️ Skipping {repo['name']}: error while reading metadata – {e}")
         return False
