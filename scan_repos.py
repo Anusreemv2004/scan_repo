@@ -77,7 +77,7 @@ wb = Workbook()
 ws = wb.active
 ws.title = "Filtered GitHub Repos"
 # Define all possible property keys you expect
-custom_keys = ["export", "status"]
+custom_keys = ["private", "sensitivity", "contains_pi"]
 # Add headers
 ws.append(["Name", "URL"] + [key.capitalize() for key in custom_keys])
 # Write repo data
