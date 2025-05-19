@@ -58,7 +58,7 @@ while True:
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(f"🚨 API Error: {response.status_code}")
-        print("Response:", response.text
+        print("Response:", response.text)
         break
     repos = response.json()
     if not repos:
